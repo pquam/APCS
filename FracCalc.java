@@ -135,7 +135,7 @@ public class FracCalc {
 			//References list for pieces of equation
 	    	String numbers = "";
 	    	//scanner for finding number before /
-	    	@SuppressWarnings("resource")
+	    	@SuppressWarnings({ "resource", "unused" })
 			Scanner parser = new Scanner(numbers).useDelimiter("/");
 	    	int in = 0;
 	    	//temporary denominator of each piece of equation
@@ -151,7 +151,7 @@ public class FracCalc {
 					
 					//set numbers equal to each element, and set d equal to the last symbol
 					numbers = list.get(i);
-					in = numbers.indexOf("/") - 1;
+					in = numbers.indexOf("/");
 					n = numbers.indexOf(in);
 					//put n into element i of array ns
 					ns[i] = n;
