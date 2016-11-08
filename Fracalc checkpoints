@@ -1,2 +1,22 @@
 
 
+checkpoint2 {
+
+
+  main {
+  
+    Scanner conslone = new scanner(System.in);
+    System.out.println("What are your memes?");
+    String memes = "";
+    while (!memes.equals("quit")) {
+      memes = console.nextline();
+      produceAnswer(memes);
+      }
+    
+  }
+  
+  produceAnswer(String memes) {
+    
+    scanner parser = new scanner()
+  }
+}
