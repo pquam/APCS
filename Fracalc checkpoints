@@ -17,6 +17,13 @@ checkpoint2 {
   
   produceAnswer(String memes) {
     
-    scanner parser = new scanner()
+    scanner parser = new scanner(memes).usedelimiter(" ");
+      operand1 =  parser.next();
+      operator1 = parser.next();
+      operand2 = parser.next();
+      parser.close();
+      
+      
+      
   }
 }
