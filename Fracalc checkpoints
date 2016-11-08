@@ -12,6 +12,13 @@ checkpoint2 {
       memes = console.nextline();
       produceAnswer(memes);
       }
+      
+      /*
+      while (memes != "quit") {
+      memes = console.nextline();
+      produceAnswer(memes);
+      }
+      */
     
   }
   
