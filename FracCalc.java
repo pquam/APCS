@@ -9,7 +9,7 @@ public class FracCalc {
         // TODO: Read the input from the user and call produceAnswer with an equation
 		
 		//string input declaration
-    	String input = "5_3/4 - 6_5/8";
+    	String input = "5_3/4 + 6_5/8";
     	@SuppressWarnings("resource")
     	//start a new scanner called parser
 		Scanner parser = new Scanner(input).useDelimiter(" ");
@@ -42,20 +42,27 @@ public class FracCalc {
 			}
 		}
 		
+		System.out.println("List size: " + list.size());
+		
 		//call method for whole numbers
-		WholeNumbers(list);
+    	int[] wns = new int[list.size() + 1];
+		WholeNumbers(list, wns);
 		
 		//call method for numerator
-		numerator(list);
+    	int[] ns = new int[list.size() + 1];
+		numerator(list, ns);
 				
 		//call method to find denominator
-		denominator(list);
+		int[] ds = new int[list.size() + 1];
+		denominator(list, ds);
+		
+		String answer = "";
 		
 		//call add method if the operand is add
-/*		if (op.equals("+")) {
+		if (op.equals("+")) {
 			
 			System.out.println("Addition");
-			add(list);
+			System.out.println("Answer: " + add(list, wns, ns, ds));
 		}
 		
 		//call subtract method if operand equals subtract
@@ -64,8 +71,8 @@ public class FracCalc {
 			System.out.println("subtraction");
 			sub(list);
 		}
-*/		
-    	
+		
+    	System.out.println(answer);
 
     }
     
@@ -89,7 +96,7 @@ public class FracCalc {
     // TODO: Fill in the space below with any helper methods that you think you will need
  
     //method for finding whole numbers
-    public static void WholeNumbers(ArrayList<String> list) {
+    public static void WholeNumbers(ArrayList<String> list, int[] wns) {
     	
     	System.out.println("");
 		//
@@ -98,8 +105,6 @@ public class FracCalc {
 	    	//temporary denominator of each piece of equation
 	    	String wn = "";
 	    	int number = 0;
-	    	//array for denominators
-	    	int[] wns = new int[list.size() + 1];
 	    	System.out.print("Your Whole Number(s): ");
 	    	//for each item in ArrayList list
 	    	for (int i = 0; i < list.size(); i++) {
@@ -107,7 +112,7 @@ public class FracCalc {
 				//check for even numbered elements (Should be numbers)
 				if (i % 2 == 0) {
 					
-					//set numbers equal to each element, and set d equal to the last symbol
+					//set numbers equal to each element, and set wn equal to the first int
 					numbers = list.get(i);
 					wn = String.valueOf(numbers.charAt(0));
 					number = Integer.parseInt(wn);
@@ -127,7 +132,7 @@ public class FracCalc {
     }
     
     //method for finding numerator
-    public static void numerator(ArrayList<String> list) {
+    public static void numerator(ArrayList<String> list, int[] ns) {
     	
     	System.out.println("");
 		//
@@ -135,13 +140,11 @@ public class FracCalc {
 			//References list for pieces of equation
 	    	String numbers = "";
 	    	//scanner for finding number before /
-	    	@SuppressWarnings({ "resource", "unused" })
+	    	@SuppressWarnings("resource")
 			Scanner parser = new Scanner(numbers).useDelimiter("/");
 	    	int in = 0;
 	    	//temporary denominator of each piece of equation
 	    	int n = 0;
-	    	//array for denominators
-	    	int[] ns = new int[list.size() + 1];
 	    	System.out.print("Your numerator(s): ");
 	    	//for each item in ArrayList list
 	    	for (int i = 0; i < list.size(); i++) {
@@ -151,8 +154,7 @@ public class FracCalc {
 					
 					//set numbers equal to each element, and set d equal to the last symbol
 					numbers = list.get(i);
-					in = numbers.indexOf("/");
-					n = numbers.indexOf(in);
+					n = Integer.parseInt(String.valueOf(numbers.charAt(numbers.indexOf("/") - 1)));
 					//put n into element i of array ns
 					ns[i] = n;
 				}
@@ -170,7 +172,7 @@ public class FracCalc {
     }
     
     // method for finding denominator
-    public static void denominator(ArrayList<String> list) {
+    public static void denominator(ArrayList<String> list, int[] ds) {
     	
 		System.out.println("");
 		//
@@ -179,7 +181,7 @@ public class FracCalc {
 	    	//temporary denominator of each piece of equation
 	    	int d = 0;
 	    	//array for denominators
-	    	int[] ds = new int[list.size() + 1];
+	    	
 	    	System.out.print("Your denominator(s): ");
 	    	//for each item in ArrayList list
 	    	for (int i = 0; i < list.size(); i++) {
@@ -198,25 +200,79 @@ public class FracCalc {
 					ds[i] = 0; 
 				}
 	    	}
+	    	
 	    	//
 	    	for (int i = 0; i <= ds.length - 2; i++) {
 	    		
 	    		System.out.print(ds[i] + " ");
 	    	}
-	    	
-		//
-	    	System.out.println("");
-		System.out.println("List size: " + list.size());
+	    	return;
     }
-    //method for addition
-	public static void add(ArrayList<String> list) {
-    	
+    
+    //method for greatest common denominator
+    public static int gcd(int a, int b) {
 
+    	int b2 = 0;
+    	while (b != 0) {
+    		
+    		a = a % b;
+    		b2 = b;
+    		b = a;
+    		a = b2;
+    	}
+    	System.out.print("A: " + a + " ");
+    	return Math.abs(a);
+    	
+    	
+    }
+    
+    //method for addition
+	public static String add(ArrayList<String> list, int[] wns, int[] ns, int[] ds) {
+    	
+		System.out.print("ds: " + ds[1] + "" + ds[3]);
+		int a = ds[1];
+		int b = ds[3];
+		System.out.print("D: " + gcd(a, b) + " ");
+		//int for common denominator
+		int D = 1;
+		//check to see if denominators match
+		if (ds[1] != ds[3]) {
+			
+			//call method for greatest common denominator
+			
+			
+			//multiply smaller fraction by cd
+			if (ds[1] < ds[3]) {
+				
+				ns[1] = ns[1] * D;
+				ds[1] = ds[1] * D;
+			}
+		}
+		
+		//actually add the things
+		
+		int WN = 0;
+		int N = 0;
+		for (int i = 0; i <= list.size(); i++) {
+			
+			WN = WN + wns[i];
+			N = N + ns[i];
+		}
+		
+		int WN2 = 0;
+		if (N >= D) {
+			WN2 = N / D;
+			N = N % D;
+			WN += WN2;
+		}
+
+		String answer = "" + D;
+		return answer;
     }
     
     //method for subtraction
     public static void sub(ArrayList<String> list) {
     	
-   
+    	
     }
 }
