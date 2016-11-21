@@ -7,11 +7,17 @@ public class FracCalc {
 
 	public static void main(String[] args) {
       
-		@SuppressWarnings("resource")
+		String input = "";
 		Scanner console = new Scanner(System.in);
-    	System.out.println("What is your equation?");
-    	String input = console.nextLine();
-    	produceAnswer(input);
+		System.out.println("What is your equation?");
+    	input = console.nextLine();
+		while (! input.equals("quit")) {
+	    	String answer = produceAnswer(input);
+	    	System.out.println("Your reduced answer is: " + answer + "\nWhat is your equation?");
+	    	input = console.nextLine();
+		}
+		System.out.println("Thanks for using my fraction calculator!");
+		console.close();
     }
     
     // ** IMPORTANT ** DO NOT DELETE THIS FUNCTION.  This function will be used to test your code
@@ -45,12 +51,9 @@ public class FracCalc {
     	    	
     	    	//close parser
     	    	parser.close();
-    			System.out.println("Your equation: " + list + " ");
-    			
 //    			
     			//String declaration for operand
     			String op = "";
-    			System.out.print("Your operand(s): ");
     			//for each element of the array
     			for (int i = 0; i < list.size(); i++) {
     				
@@ -59,41 +62,55 @@ public class FracCalc {
     					
     					//set op equal to the operand, and print it out
     					op = list.get(i);
-    					System.out.print(op + "  ");
     				}
     			}
     			
-    			System.out.println("List size: " + list.size());
-    			
-    			//call method for whole numbers
-    	    	int[] wns = new int[list.size() + 1];
-    			WholeNumbers(list, wns);
-    			
-    			//call method for numerator
-    	    	int[] ns = new int[list.size() + 1];
-    			numerator(list, ns);
-    					
-    			//call method to find denominator
-    			int[] ds = new int[list.size() + 1];
-    			denominator(list, ds);
-    			
     			String answer = "";
-    			//call add method if the operand is add
-    			if (op.equals("+")) {
-    				
-    				System.out.println("Addition");
-    				answer = add(list, wns, ns, ds);
-    				System.out.println("Answer: " + answer);
-    			}
     			
-    			//call subtract method if operand equals subtract
-    			if (op.equals("-")) {
+    			if (list.size() > 2) {
     				
-    				System.out.println("subtraction");
-    				sub(list);
+	    			//call method for whole numbers
+	    	    	int[] wns = new int[list.size() + 1];
+	    			WholeNumbers(list, wns);
+
+	    			
+	    			//call method for numerator
+	    	    	int[] ns = new int[list.size() + 1];
+	    			numerator(list, ns);
+	    			
+	    			//call method to find denominator
+	    			int[] ds = new int[list.size() + 1];
+	    			denominator(list, ds);
+
+	    			//call add method if the operand is add
+	    			if (op.equals("+")) {
+	    				
+	    				answer = add(list, wns, ns, ds);
+	    			}
+	    			
+	    			//call subtract method if operand equals subtract
+	    			if (op.equals("-")) {
+	    				
+	    				answer = sub(list, wns, ns, ds);
+	    			}
+	    			
+	    			//call multiply method if operand equals multiply
+	    			if (op.equals("*")) {
+	    				
+	    				//answer = ;
+	    			}
+	    			
+	    			//call divide method if operand equals multiply
+	    			if (op.equals("/")) {
+	    				
+	    				//answer = ;
+	    			}
     			}
-    			
-    	    	return list.get(3);
+    			else {
+    				
+    				answer = list.get(0);
+    			}
+    	    	return answer;
     }
 
     // TODO: Fill in the space below with any helper methods that you think you will need
@@ -101,55 +118,42 @@ public class FracCalc {
     //method for finding whole numbers
     public static void WholeNumbers(ArrayList<String> list, int[] wns) {
     	
-    	System.out.println("");
-		//
 			//References list for pieces of equation
 	    	String numbers = "";
 	    	//temporary denominator of each piece of equation
-	    	String wn = "";
 	    	int number = 0;
-	    	System.out.print("Your Whole Number(s): ");
 	    	//for each item in ArrayList list
 	    	for (int i = 0; i < list.size(); i++) {
 	    		
 				//check for even numbered elements (Should be numbers)
 				if (i % 2 == 0) {
 					
-					//set numbers equal to each element, and set wn equal to the first int
 					numbers = list.get(i);
-					wn = String.valueOf(numbers.charAt(0));
-					number = Integer.parseInt(wn);
-					//put wn into element i of array wns
+					try {
+							
+						number = Integer.parseInt(String.valueOf(numbers.substring(0, numbers.indexOf("_"))));
+					}
+					catch (StringIndexOutOfBoundsException number2) {
+						number = 0;
+					}
+					
 					wns[i] = number;
 				}
 				else {
 					
+					//put wn into element i of array wns
 					wns[i] = 0; 
 				}
 	    	}
-	    	//
-	    	for (int i = 0; i <= wns.length - 2; i++) {
-	    		
-	    		System.out.print(wns[i] + " ");
-	    	}
-	    	
     }
     
     //method for finding numerator
     public static void numerator(ArrayList<String> list, int[] ns) {
     	
-    	System.out.println("");
-		//
-    	
 			//References list for pieces of equation
 	    	String numbers = "";
-	    	//scanner for finding number before /
-	    	@SuppressWarnings("resource")
-			Scanner parser = new Scanner(numbers).useDelimiter("/");
-	    	int in = 0;
 	    	//temporary denominator of each piece of equation
 	    	int n = 0;
-	    	System.out.print("Your numerator(s): ");
 	    	//for each item in ArrayList list
 	    	for (int i = 0; i < list.size(); i++) {
 	    		
@@ -158,35 +162,42 @@ public class FracCalc {
 					
 					//set numbers equal to each element, and set d equal to the last symbol
 					numbers = list.get(i);
-					n = Integer.parseInt(String.valueOf(numbers.charAt(numbers.indexOf("/") - 1)));
+					try {
+						//if there is an underscore and a slash
+						n = Integer.parseInt(String.valueOf(numbers.substring(numbers.indexOf("_") + 1, numbers.indexOf("/"))));
+					}
+					catch (StringIndexOutOfBoundsException nu) {
+						
+						try {
+							//if there is a slash but no underscore
+							n = Integer.parseInt(String.valueOf(numbers.substring(0, numbers.indexOf("/"))));
+						}
+						catch (StringIndexOutOfBoundsException nu2) {
+							//if there is no slash and no underscore
+							n = 0;
+						}
+					}
 					//put n into element i of array ns
 					ns[i] = n;
+
 				}
 				else {
 					
 					ns[i] = 0; 
 				}
 	    	}
-	    	
-	    	//
-	    	for (int i = 0; i <= ns.length - 2; i++) {
-	    		
-	    		System.out.print(ns[i] + " ");
-	    	}
     }
     
     // method for finding denominator
     public static void denominator(ArrayList<String> list, int[] ds) {
     	
-		System.out.println("");
-		//
 			//References list for pieces of equation
 	    	String numbers = "";
+	    	int x = 0;
 	    	//temporary denominator of each piece of equation
 	    	int d = 0;
 	    	//array for denominators
-	    	
-	    	System.out.print("Your denominator(s): ");
+	
 	    	//for each item in ArrayList list
 	    	for (int i = 0; i < list.size(); i++) {
 	    		
@@ -195,7 +206,18 @@ public class FracCalc {
 					
 					//set numbers equal to each element, and set d equal to the last symbol
 					numbers = list.get(i);
-					d = Integer.parseInt(numbers.substring(numbers.length() - 1));
+					try {
+						if (numbers.indexOf("/") != -1) {
+							
+							x = numbers.indexOf("/");
+							d = Integer.parseInt(numbers.substring(x + 1, numbers.length()));
+						}
+						else {d = 1;}
+					}
+					catch (StringIndexOutOfBoundsException du) {
+						
+						d = 1;
+					}
 					//put d into element i of array ds
 					ds[i] = d;
 				}
@@ -204,79 +226,102 @@ public class FracCalc {
 					ds[i] = 0; 
 				}
 	    	}
-	    	
-	    	//
-	    	for (int i = 0; i <= ds.length - 2; i++) {
-	    		
-	    		System.out.print(ds[i] + " ");
-	    	}
-	    	return;
+    }
+    
+    //method for addition
+	public static String add(ArrayList<String> list, int[] wns, int[] ns, int[] ds) {
+    	
+		//find greatest common denominator
+		int a = ds[0];
+		int b = ds[2];
+		int denominator = gcd(a, b);
+//
+		int numerator = 0;
+		int WholeNumber = 0;
+		int WholeNumber1 = 0;
+		int WholeNumber2 = 0;
+		String answer = "";
+		//add whole numbers
+		for (int i = 0; i <= wns.length - 1; i++) {
+				
+			if (i % 2 == 0) {	
+				WholeNumber2 = WholeNumber2 + wns[i];
+			}
+		}
+
+		//multiply numerators by common denominator
+		for (int i = 0; i <= ns.length - 1; i++) {
+			ns[i] = ns[i] * denominator;
+		}
+		//add numerators
+		for (int i = 0; i <= ns.length - 1; i++) {
+			if (i % 2 == 0) {
+				numerator = numerator + ns[i];
+			}
+		}
+		//Divide numerator by denominator to get whole number from fractions
+		WholeNumber1 = numerator / denominator;
+		//get new fraction numerator
+		numerator = numerator % denominator;
+		
+		WholeNumber = WholeNumber1 + WholeNumber2;
+		answer = WholeNumber + "_" + numerator + "/" + denominator;
+		return answer;
+    }
+    
+    //method for subtraction
+    public static String sub(ArrayList<String> list, int[] wns, int[] ns, int[] ds) {
+    	
+    	//find greatest common denominator
+    			int a = ds[0];
+    			int b = ds[2];
+    			int denominator = gcd(a, b);
+    	//
+    			int numerator = 0;
+    			int WholeNumber = 0;
+    			int WholeNumber1 = 0;
+    			int WholeNumber2 = 0;
+    			String answer = "";
+    			//add whole numbers
+    			for (int i = 0; i <= wns.length - 1; i++) {
+    					
+    				if (i % 2 == 0) {	
+    					WholeNumber2 = WholeNumber2 + wns[i];
+    				}
+    			}
+
+    			//multiply numerators by common denominator
+    			for (int i = 0; i <= ns.length - 1; i++) {
+    				ns[i] = ns[i] * denominator;
+    			}
+    			//add numerators
+    			for (int i = 0; i <= ns.length - 1; i++) {
+    				if (i % 2 == 0) {
+    					numerator = numerator + ns[i];
+    				}
+    			}
+    			//Divide numerator by denominator to get whole number from fractions
+    			WholeNumber1 = numerator / denominator;
+    			//get new fraction numerator
+    			numerator = numerator % denominator;
+    			
+    			WholeNumber = WholeNumber1 + WholeNumber2;
+    			answer = WholeNumber + "_" + numerator + "/" + denominator;
+    			return answer;
     }
     
     //method for greatest common denominator
     public static int gcd(int a, int b) {
-
     	int b2 = 0;
+
+ 	
     	while (b != 0) {
     		
     		a = a % b;
     		b2 = b;
     		b = a;
     		a = b2;
-    	}
-    	System.out.print("A: " + a + " ");
-    	return Math.abs(a);
-    	
-    	
-    }
-    
-    //method for addition
-	public static String add(ArrayList<String> list, int[] wns, int[] ns, int[] ds) {
-    	
-		System.out.print("ds: " + ds[1] + "" + ds[3]);
-		int a = ds[1];
-		int b = ds[3];
-		System.out.print("D: " + gcd(a, b) + " ");
-		//int for common denominator
-		int D = 1;
-		//check to see if denominators match
-		if (ds[1] != ds[3]) {
-			
-			//call method for greatest common denominator
-			
-			
-			//multiply smaller fraction by cd
-			if (ds[1] < ds[3]) {
-				
-				ns[1] = ns[1] * D;
-				ds[1] = ds[1] * D;
-			}
-		}
-		
-		//actually add the things
-		
-		int WN = 0;
-		int N = 0;
-		for (int i = 0; i <= list.size(); i++) {
-			
-			WN = WN + wns[i];
-			N = N + ns[i];
-		}
-		
-		int WN2 = 0;
-		if (N >= D) {
-			WN2 = N / D;
-			N = N % D;
-			WN += WN2;
-		}
-
-		String answer = "" + D;
-		return answer;
-    }
-    
-    //method for subtraction
-    public static void sub(ArrayList<String> list) {
-    	
-    	
+    	} 
+    	return b2;
     }
 }
