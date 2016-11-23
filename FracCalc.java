@@ -76,7 +76,7 @@ public class FracCalc {
 	    			
 	    			//call method for numerator
 	    	    	int[] ns = new int[list.size() + 1];
-	    			numerator(list, ns);
+	    			numerator(list, ns, wns);
 	    			
 	    			//call method to find denominator
 	    			int[] ds = new int[list.size() + 1];
@@ -97,13 +97,13 @@ public class FracCalc {
 	    			//call multiply method if operand equals multiply
 	    			if (op.equals("*")) {
 	    				
-	    				//answer = ;
+	    				answer = multiply(list, wns, ns, ds);
 	    			}
 	    			
 	    			//call divide method if operand equals multiply
 	    			if (op.equals("/")) {
 	    				
-	    				//answer = ;
+	    				answer = devide(list, wns, ns, ds);
 	    			}
     			}
     			else {
@@ -129,12 +129,20 @@ public class FracCalc {
 				if (i % 2 == 0) {
 					
 					numbers = list.get(i);
-					try {
+					if (numbers.indexOf("_") == -1) {
+						
+						if (numbers.indexOf("/") == -1) {
 							
-						number = Integer.parseInt(String.valueOf(numbers.substring(0, numbers.indexOf("_"))));
+							number = Integer.parseInt(numbers);
+						}
+						else {
+							
+							number = 0;
+						}
 					}
-					catch (StringIndexOutOfBoundsException number2) {
-						number = 0;
+					else {
+						
+						number = Integer.parseInt(String.valueOf(numbers.substring(0, numbers.indexOf("_"))));
 					}
 					
 					wns[i] = number;
@@ -148,7 +156,7 @@ public class FracCalc {
     }
     
     //method for finding numerator
-    public static void numerator(ArrayList<String> list, int[] ns) {
+    public static void numerator(ArrayList<String> list, int[] ns, int[] wns) {
     	
 			//References list for pieces of equation
 	    	String numbers = "";
@@ -178,6 +186,7 @@ public class FracCalc {
 						}
 					}
 					//put n into element i of array ns
+					if (wns[i] < 0) {n = n * -1;}
 					ns[i] = n;
 
 				}
@@ -231,90 +240,204 @@ public class FracCalc {
     //method for addition
 	public static String add(ArrayList<String> list, int[] wns, int[] ns, int[] ds) {
     	
-		//find greatest common denominator
+		
+		//declare variables
+		int numerator = 0;
+		int wholenumber = 0;
+		String answer = "";
+		//find GCD
 		int a = ds[0];
 		int b = ds[2];
 		int denominator = gcd(a, b);
-//
-		int numerator = 0;
-		int WholeNumber = 0;
-		int WholeNumber1 = 0;
-		int WholeNumber2 = 0;
-		String answer = "";
-		//add whole numbers
-		for (int i = 0; i <= wns.length - 1; i++) {
-				
-			if (i % 2 == 0) {	
-				WholeNumber2 = WholeNumber2 + wns[i];
-			}
+		//
+		if (denominator == 1) {
+			
+			denominator = a * b;
+			ns[0] = ns[0] * b;
+			ns[2] = ns[2] * a;
 		}
-
-		//multiply numerators by common denominator
-		for (int i = 0; i <= ns.length - 1; i++) {
-			ns[i] = ns[i] * denominator;
+		if (a % b == 0) {
+			
+			denominator = a;
+			ns[2] = ns[2] * (a/b);
+		} 
+		else if (b % a == 0) {
+			
+			denominator = b;
+			ns[0] = ns[0] * (b/a);
 		}
-		//add numerators
-		for (int i = 0; i <= ns.length - 1; i++) {
-			if (i % 2 == 0) {
-				numerator = numerator + ns[i];
-			}
+		if (a == b) {
+			denominator = a;
 		}
-		//Divide numerator by denominator to get whole number from fractions
-		WholeNumber1 = numerator / denominator;
-		//get new fraction numerator
-		numerator = numerator % denominator;
 		
-		WholeNumber = WholeNumber1 + WholeNumber2;
-		answer = WholeNumber + "_" + numerator + "/" + denominator;
+		for (int i = 0; i <= wns.length - 1; i++) {
+			
+			wns[i] = wns[i] * denominator;
+		}
+		for (int i = 0; i <= wns.length - 1; i++) {
+			
+			numerator += wns[i];
+		}
+		for (int i = 0; i <= ns.length - 1; i++) {
+			
+			numerator += ns[i];
+		}
+		wholenumber = numerator / denominator;
+		numerator = Math.abs(numerator % denominator);
+		if (numerator == 0) {
+			answer = wholenumber + "";
+		}
+		else if (wholenumber == 0) { answer = numerator + "/" + denominator;}
+		else {
+			answer = wholenumber + "_" + numerator + "/" + denominator;
+		}
 		return answer;
     }
     
     //method for subtraction
     public static String sub(ArrayList<String> list, int[] wns, int[] ns, int[] ds) {
     	
-    	//find greatest common denominator
+    	//declare variables
+    			int numerator = 0;
+    			int wholenumber = 0;
+    			String answer = "";
+    			//find GCD
     			int a = ds[0];
     			int b = ds[2];
     			int denominator = gcd(a, b);
-    	//
-    			int numerator = 0;
-    			int WholeNumber = 0;
-    			int WholeNumber1 = 0;
-    			int WholeNumber2 = 0;
-    			String answer = "";
-    			//add whole numbers
+    			//
+    			if (denominator == 1) {
+    				
+    				denominator = a * b;
+    				ns[0] = ns[0] * b;
+    				ns[2] = ns[2] * a;
+    			}
+    			if (a % b == 0) {
+    				
+    				denominator = a;
+    				ns[2] = ns[2] * (a/b);
+    			} 
+    			else if (b % a == 0) {
+    				
+    				denominator = b;
+    				ns[0] = ns[0] * (b/a);
+    			}
+    			if (a == b) {
+    				denominator = a;
+    			}
+    			//
+    			for (int i = 0; i <= ns.length - 1; i++) {
+    				
+    				numerator -= ns[i];
+    			}
     			for (int i = 0; i <= wns.length - 1; i++) {
-    					
-    				if (i % 2 == 0) {	
-    					WholeNumber2 = WholeNumber2 + wns[i];
-    				}
+    				
+    				wns[i] = wns[i] * denominator;
     			}
-
-    			//multiply numerators by common denominator
-    			for (int i = 0; i <= ns.length - 1; i++) {
-    				ns[i] = ns[i] * denominator;
+    			for (int i = 0; i <= wns.length - 1; i++) {
+    				
+    				numerator += wns[i];
     			}
-    			//add numerators
-    			for (int i = 0; i <= ns.length - 1; i++) {
-    				if (i % 2 == 0) {
-    					numerator = numerator + ns[i];
-    				}
-    			}
-    			//Divide numerator by denominator to get whole number from fractions
-    			WholeNumber1 = numerator / denominator;
-    			//get new fraction numerator
-    			numerator = numerator % denominator;
     			
-    			WholeNumber = WholeNumber1 + WholeNumber2;
-    			answer = WholeNumber + "_" + numerator + "/" + denominator;
+    			wholenumber = numerator / denominator;
+    			numerator = numerator % denominator;
+    			if (numerator == 0) {
+    				answer = wholenumber + "";
+    			}
+    			else if (wholenumber == 0) { answer = numerator + "/" + denominator;}
+    			else {
+    				answer = wholenumber + "_" + numerator + "/" + denominator;
+    			}
     			return answer;
     }
     
+    public static String multiply(ArrayList<String> list, int[] wns, int[] ns, int[] ds) {
+    	
+    	String answer = "";    	
+    	int numerator = ns[0];
+    	int denominator = ds[0];
+    	int wholenumber = 0;
+    	int wholenumber1 = wns[0];
+    	
+    	for (int i = 2; i <= ns.length - 1; i++) {
+    		
+    		if (i % 2 == 0) {
+    			
+    			numerator = numerator * ns[i];
+    		}
+    	}
+    	for (int i = 2; i <= ds.length - 1; i++) {
+    		
+    		if (i % 2 == 0) {
+    			
+    			denominator = denominator * ds[i];
+    		}
+    	}
+    	for (int i = 2; i <= wns.length - 1; i++) {
+    		
+    		if (i % 2 == 0){
+    			
+    			wholenumber1 = wholenumber1 * wns[i];
+    		}
+    	}
+    	numerator += (wholenumber1 * denominator);
+    	
+    	wholenumber = numerator / denominator;
+		numerator = numerator % denominator;
+		if (numerator == 0) {
+			answer = wholenumber + "";
+		}
+		else if (wholenumber == 0) { answer = numerator + "/" + denominator;}
+		else {
+			answer = wholenumber + "_" + numerator + "/" + denominator;
+		}
+		return answer;
+	}
+    
+ public static String devide(ArrayList<String> list, int[] wns, int[] ns, int[] ds) {
+    	
+	 	int b1 = ns[2];
+	 	ns[2] = ds[2];
+	 	ds[2] = b1;
+    	String answer = "";    	
+    	int numerator = ns[0];
+    	int denominator = ds[0];
+    	int wholenumber = 0;
+    	for (int i = 2; i <= ns.length - 1; i++) {
+    		
+    		if (i % 2 == 0) {
+    			
+    			numerator = numerator * ns[i];
+    		}
+    	}
+    	for (int i = 2; i <= ds.length - 1; i++) {
+    		
+    		if (i % 2 == 0) {
+    			
+    			denominator = denominator * ds[i];
+    		}
+    	}
+    	try {
+    		wholenumber = numerator / denominator;
+			numerator = numerator % denominator;
+    	}
+    	catch (ArithmeticException d0) {
+    		denominator = 1;
+    	}
+		if (numerator == 0) {
+			answer = wholenumber + "";
+		}
+		else if (wholenumber == 0) { answer = numerator + "/" + denominator;}
+		else {
+			answer = wholenumber + "_" + numerator + "/" + denominator;
+		}
+		return answer;
+	}
+    
     //method for greatest common denominator
     public static int gcd(int a, int b) {
+    	
     	int b2 = 0;
-
- 	
     	while (b != 0) {
     		
     		a = a % b;
@@ -322,6 +445,7 @@ public class FracCalc {
     		b = a;
     		a = b2;
     	} 
+    	
     	return b2;
     }
 }
